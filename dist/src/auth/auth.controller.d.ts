@@ -6,5 +6,7 @@ export type AuthBody = {
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    login(authBody: AuthBody): Promise<string>;
+    login(authBody: AuthBody): Promise<{
+        access_token: string;
+    }>;
 }
