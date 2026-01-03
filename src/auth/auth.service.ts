@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { AuthBody } from './auth.controller';
 import { PrismaService } from 'src/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  // eslint-disable-next-line prettier/prettier
+  constructor(private readonly prisma: PrismaService, private readonly jwtService: JwtService,) {}
 
   async login({ authBody }: { authBody: AuthBody }) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -27,7 +29,7 @@ export class AuthService {
       throw new Error('Mot de passe invalide.');
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return existingUser.id;
+    return await this.authenticateUser({ userId: existingUser.id });
   }
   private async hashPassword({ password }: { password: string }) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -45,5 +47,13 @@ export class AuthService {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
     const isPasswordValid = await bcrypt.compare(parssword, hashedPassword);
     return isPasswordValid;
+  }
+  private async authenticateUser({ userId }: { userId: string }) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const payload = { userId };
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      access_token: await this.jwtService.signAsync(payload),
+    };
   }
 }

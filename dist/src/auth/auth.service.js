@@ -46,10 +46,13 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
 const bcrypt = __importStar(require("bcrypt"));
+const jwt_1 = require("@nestjs/jwt");
 let AuthService = class AuthService {
     prisma;
-    constructor(prisma) {
+    jwtService;
+    constructor(prisma, jwtService) {
         this.prisma = prisma;
+        this.jwtService = jwtService;
     }
     async login({ authBody }) {
         const { email, parssword } = authBody;
@@ -68,7 +71,7 @@ let AuthService = class AuthService {
         if (!isPasswordValid) {
             throw new Error('Mot de passe invalide.');
         }
-        return existingUser.id;
+        return await this.authenticateUser({ userId: existingUser.id });
     }
     async hashPassword({ password }) {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -78,10 +81,16 @@ let AuthService = class AuthService {
         const isPasswordValid = await bcrypt.compare(parssword, hashedPassword);
         return isPasswordValid;
     }
+    async authenticateUser({ userId }) {
+        const payload = { userId };
+        return {
+            access_token: await this.jwtService.signAsync(payload),
+        };
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService, jwt_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map
