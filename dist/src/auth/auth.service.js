@@ -71,7 +71,7 @@ let AuthService = class AuthService {
         if (!isPasswordValid) {
             throw new Error('Mot de passe invalide.');
         }
-        return await this.authenticateUser({ userId: existingUser.id });
+        return this.authenticateUser({ userId: existingUser.id });
     }
     async hashPassword({ password }) {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -81,10 +81,10 @@ let AuthService = class AuthService {
         const isPasswordValid = await bcrypt.compare(parssword, hashedPassword);
         return isPasswordValid;
     }
-    async authenticateUser({ userId }) {
+    authenticateUser({ userId }) {
         const payload = { userId };
         return {
-            access_token: await this.jwtService.signAsync(payload),
+            access_token: this.jwtService.sign(payload),
         };
     }
 };

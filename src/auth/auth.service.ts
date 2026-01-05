@@ -3,6 +3,7 @@ import { AuthBody } from './auth.controller';
 import { PrismaService } from 'src/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { UserPayload } from './jwt.strategy';
 @Injectable()
 export class AuthService {
   // eslint-disable-next-line prettier/prettier
@@ -29,7 +30,7 @@ export class AuthService {
       throw new Error('Mot de passe invalide.');
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return await this.authenticateUser({ userId: existingUser.id });
+    return this.authenticateUser({ userId: existingUser.id });
   }
   private async hashPassword({ password }: { password: string }) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -48,12 +49,12 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(parssword, hashedPassword);
     return isPasswordValid;
   }
-  private async authenticateUser({ userId }: { userId: string }) {
+  private authenticateUser({ userId }: UserPayload) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const payload = { userId };
+    const payload: UserPayload = { userId };
     return {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: this.jwtService.sign(payload),
     };
   }
 }
