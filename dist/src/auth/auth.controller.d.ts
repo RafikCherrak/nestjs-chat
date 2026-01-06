@@ -5,6 +5,11 @@ export type AuthBody = {
     email: string;
     parssword: string;
 };
+export type CreateUser = {
+    email: string;
+    parssword: string;
+    firstName: string;
+};
 export declare class AuthController {
     private readonly authService;
     private readonly userService;
@@ -12,8 +17,17 @@ export declare class AuthController {
     login(authBody: AuthBody): Promise<{
         access_token: string;
     }>;
+    register(registerBody: CreateUser): Promise<{
+        access_token: string;
+    }>;
     authenticate(): Promise<{
         message: string;
     }>;
-    authenticateUser(request: jwtStrategy.RequestWithUser): Promise<void>;
+    authenticateUser(request: jwtStrategy.RequestWithUser): Promise<{
+        id: string;
+        email: string;
+        firstName: string | null;
+        avatarFileKey: string | null;
+        stripeAccountId: string | null;
+    } | null>;
 }

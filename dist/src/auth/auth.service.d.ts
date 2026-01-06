@@ -1,4 +1,4 @@
-import { AuthBody } from './auth.controller';
+import { AuthBody, CreateUser } from './auth.controller';
 import { PrismaService } from 'src/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 export declare class AuthService {
@@ -7,6 +7,11 @@ export declare class AuthService {
     constructor(prisma: PrismaService, jwtService: JwtService);
     login({ authBody }: {
         authBody: AuthBody;
+    }): Promise<{
+        access_token: string;
+    }>;
+    register({ registerBody }: {
+        registerBody: CreateUser;
     }): Promise<{
         access_token: string;
     }>;
