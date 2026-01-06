@@ -14,6 +14,11 @@ import * as jwtStrategy from './jwt.strategy';
 import { UserService } from 'src/user/user.service';
 
 export type AuthBody = { email: string; parssword: string };
+export type CreateUser = {
+  email: string;
+  parssword: string;
+  firstName: string;
+};
 @UseGuards(JwtAuthGuard)
 @Controller('auth')
 export class AuthController {
@@ -25,9 +30,14 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@Body() authBody: AuthBody) {
-    console.log('authBody', authBody);
     return await this.authService.login({ authBody });
   }
+
+  @Post('register')
+  async register(@Body() registerBody: CreateUser) {
+    return await this.authService.register({ registerBody });
+  }
+
   @Get()
   async authenticate() {
     await fetch('auth', {

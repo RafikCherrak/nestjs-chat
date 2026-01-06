@@ -73,6 +73,26 @@ let AuthService = class AuthService {
         }
         return this.authenticateUser({ userId: existingUser.id });
     }
+    async register({ registerBody }) {
+        const { email, parssword, firstName } = registerBody;
+        const existingUser = await this.prisma.user.findUnique({
+            where: {
+                email,
+            },
+        });
+        if (existingUser) {
+            throw new Error("L'utilisateur existe déja.");
+        }
+        const hashedPassword = await this.hashPassword({ password: parssword });
+        const createdUser = await this.prisma.user.create({
+            data: {
+                email,
+                password: hashedPassword,
+                firstName,
+            },
+        });
+        return this.authenticateUser({ userId: createdUser.id });
+    }
     async hashPassword({ password }) {
         const hashedPassword = await bcrypt.hash(password, 10);
         return hashedPassword;

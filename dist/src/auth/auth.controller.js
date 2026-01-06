@@ -59,8 +59,10 @@ let AuthController = class AuthController {
         this.userService = userService;
     }
     async login(authBody) {
-        console.log('authBody', authBody);
         return await this.authService.login({ authBody });
+    }
+    async register(registerBody) {
+        return await this.authService.register({ registerBody });
     }
     async authenticate() {
         await fetch('auth', {
@@ -75,8 +77,7 @@ let AuthController = class AuthController {
         return { message: 'Authentication service is running.' };
     }
     async authenticateUser(request) {
-        console.log('request.user', request.user.userId);
-        return;
+        return await this.userService.getUser({ userId: request.user.userId });
     }
 };
 exports.AuthController = AuthController;
@@ -88,6 +89,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('register'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
